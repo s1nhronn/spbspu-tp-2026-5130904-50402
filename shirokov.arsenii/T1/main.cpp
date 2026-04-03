@@ -59,3 +59,66 @@ int main()
     return 1;
   }
 }
+
+void shirokov::note(std::istream&, std::ostream&, std::unordered_map< std::string, shirokov::Note >)
+{
+  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
+  auto toIgnore = std::numeric_limits< std::streamsize >::max();
+  std::cin.ignore(toIgnore, '\n');
+}
+
+void shirokov::line(std::istream&, std::ostream&, std::unordered_map< std::string, shirokov::Note >)
+{
+  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
+  auto toIgnore = std::numeric_limits< std::streamsize >::max();
+  std::cin.ignore(toIgnore, '\n');
+}
+
+void shirokov::show(std::istream&, std::ostream&, std::unordered_map< std::string, shirokov::Note >)
+{
+  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
+  auto toIgnore = std::numeric_limits< std::streamsize >::max();
+  std::cin.ignore(toIgnore, '\n');
+}
+
+void shirokov::drop(std::istream&, std::ostream&, std::unordered_map< std::string, shirokov::Note >)
+{
+  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
+  auto toIgnore = std::numeric_limits< std::streamsize >::max();
+  std::cin.ignore(toIgnore, '\n');
+}
+
+void shirokov::link(std::istream&, std::ostream&, std::unordered_map< std::string, shirokov::Note >)
+{
+  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
+  auto toIgnore = std::numeric_limits< std::streamsize >::max();
+  std::cin.ignore(toIgnore, '\n');
+}
+
+void shirokov::halt(std::istream&, std::ostream&, std::unordered_map< std::string, shirokov::Note >)
+{
+  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
+  auto toIgnore = std::numeric_limits< std::streamsize >::max();
+  std::cin.ignore(toIgnore, '\n');
+}
+
+void shirokov::mind(std::istream&, std::ostream&, std::unordered_map< std::string, shirokov::Note >)
+{
+  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
+  auto toIgnore = std::numeric_limits< std::streamsize >::max();
+  std::cin.ignore(toIgnore, '\n');
+}
+
+void shirokov::expired(std::istream&, std::ostream&, std::unordered_map< std::string, shirokov::Note >)
+{
+  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
+  auto toIgnore = std::numeric_limits< std::streamsize >::max();
+  std::cin.ignore(toIgnore, '\n');
+}
+
+void shirokov::refresh(std::istream&, std::ostream&, std::unordered_map< std::string, shirokov::Note >)
+{
+  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
+  auto toIgnore = std::numeric_limits< std::streamsize >::max();
+  std::cin.ignore(toIgnore, '\n');
+}
