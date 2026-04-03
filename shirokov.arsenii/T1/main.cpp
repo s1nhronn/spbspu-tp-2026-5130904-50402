@@ -62,7 +62,7 @@ int main()
     }
     catch (...)
     {
-      std::cerr << "<INVALID COMMAND>\n";
+      std::cout << "<INVALID COMMAND>\n";
       auto toIgnore = std::numeric_limits< std::streamsize >::max();
       std::cin.ignore(toIgnore, '\n');
     }
@@ -198,11 +198,16 @@ void shirokov::refresh(std::istream& in, std::ostream&, map_t& notes)
   std::string noteFrom;
   in >> noteFrom;
   std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
+  std::vector< std::string > toRemove;
   for (const auto& pair : fromPtr->links)
   {
     if (!pair.second.lock())
     {
-      fromPtr->links.erase(pair.first);
+      toRemove.push_back(pair.first);
     }
+  }
+  for (const auto& key : toRemove)
+  {
+    fromPtr->links.erase(key);
   }
 }
