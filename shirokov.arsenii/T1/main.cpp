@@ -98,12 +98,17 @@ void shirokov::show(std::istream& in, std::ostream& out, map_t& notes)
   {
     out << line << '\n';
   }
+  if (notes.at(noteName)->entries.empty())
+  {
+    out << '\n';
+  }
 }
 
 void shirokov::drop(std::istream& in, std::ostream&, map_t& notes)
 {
   std::string noteName;
   in >> noteName;
+  notes.at(noteName);
   notes.erase(noteName);
 }
 
@@ -149,7 +154,7 @@ void shirokov::expired(std::istream& in, std::ostream& out, map_t& notes)
   size_t k = 0;
   for (const auto& pair : fromPtr->links)
   {
-    if (pair.second.lock())
+    if (!pair.second.lock())
     {
       ++k;
     }
