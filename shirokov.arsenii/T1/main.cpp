@@ -1,4 +1,3 @@
-#include <cmath>
 #include <iomanip>
 #include <ios>
 #include <iostream>
@@ -24,7 +23,8 @@ namespace shirokov
   {
     Note() = default;
     std::vector< std::string > entries;
-    std::unordered_map< std::string, std::weak_ptr< Note > > links;
+    std::unordered_map< std::string, std::weak_ptr< Note > >
+        links; // FIXME: хэш-таблице безразлично на порядок добавления элементов, надо переделать на вектор пар
   };
 
   void note(std::istream& in, std::ostream&, map_t& notes);
