@@ -130,6 +130,7 @@ void shirokov::halt(std::istream& in, std::ostream&, map_t& notes)
   std::string noteFrom, noteTo;
   in >> noteFrom >> noteTo;
   std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
+  notes.at(noteTo);
   fromPtr->links.erase(noteTo);
 }
 
