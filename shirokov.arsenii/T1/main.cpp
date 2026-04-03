@@ -144,6 +144,10 @@ void shirokov::mind(std::istream& in, std::ostream& out, map_t& notes)
       out << pair.first << '\n';
     }
   }
+  if (fromPtr->links.empty())
+  {
+    out << '\n';
+  }
 }
 
 void shirokov::expired(std::istream& in, std::ostream& out, map_t& notes)
