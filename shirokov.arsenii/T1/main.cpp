@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iomanip>
 #include <ios>
 #include <iostream>
@@ -78,9 +79,13 @@ void shirokov::note(std::istream& in, std::ostream&, map_t& notes)
 {
   std::string noteName;
   in >> noteName;
-  if (!noteName.empty() && notes.find(noteName) == notes.end())
+  if (notes.find(noteName) == notes.end())
   {
     notes[noteName] = std::make_shared< Note >();
+  }
+  else
+  {
+    throw std::logic_error("");
   }
 }
 
@@ -119,9 +124,13 @@ void shirokov::link(std::istream& in, std::ostream&, map_t& notes)
   in >> noteFrom >> noteTo;
   std::shared_ptr< Note > toPtr = notes.at(noteTo);
   std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
-  if (!noteTo.empty() && !noteFrom.empty() && fromPtr->links.find(noteTo) == fromPtr->links.end())
+  if (fromPtr->links.find(noteTo) == fromPtr->links.end())
   {
     fromPtr->links[noteTo] = toPtr;
+  }
+  else
+  {
+    throw std::logic_error("");
   }
 }
 
