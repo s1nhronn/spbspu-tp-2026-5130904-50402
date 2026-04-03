@@ -5,6 +5,7 @@
 #include <limits>
 #include <memory>
 #include <ostream>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -94,13 +95,21 @@ void shirokov::show(std::istream& in, std::ostream& out, map_t& notes)
 {
   std::string noteName;
   in >> noteName;
-  for (std::string line : notes.at(noteName)->entries)
+  try
   {
-    out << line << '\n';
+    for (std::string line : notes.at(noteName)->entries)
+    {
+      out << line << '\n';
+    }
+    if (notes.at(noteName)->entries.empty())
+    {
+      out << '\n';
+    }
   }
-  if (notes.at(noteName)->entries.empty())
+  catch (const std::out_of_range&)
   {
     out << '\n';
+    throw;
   }
 }
 
@@ -114,8 +123,8 @@ void shirokov::drop(std::istream& in, std::ostream&, map_t& notes)
 
 void shirokov::link(std::istream& in, std::ostream&, map_t& notes)
 {
-  std::string noteTo, noteFrom;
-  in >> noteTo >> noteFrom;
+  std::string noteFrom, noteTo;
+  in >> noteFrom >> noteTo;
   std::shared_ptr< Note > toPtr = notes.at(noteTo);
   std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
   if (!noteTo.empty() && !noteFrom.empty() && fromPtr->links.find(noteTo) == fromPtr->links.end())
@@ -126,8 +135,8 @@ void shirokov::link(std::istream& in, std::ostream&, map_t& notes)
 
 void shirokov::halt(std::istream& in, std::ostream&, map_t& notes)
 {
-  std::string noteTo, noteFrom;
-  in >> noteTo >> noteFrom;
+  std::string noteFrom, noteTo;
+  in >> noteFrom >> noteTo;
   std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
   fromPtr->links.erase(noteTo);
 }
@@ -136,19 +145,27 @@ void shirokov::mind(std::istream& in, std::ostream& out, map_t& notes)
 {
   std::string noteFrom;
   in >> noteFrom;
-  std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
-  bool flag = false;
-  for (const auto& pair : fromPtr->links)
+  try
   {
-    if (pair.second.lock())
+    std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
+    bool flag = false;
+    for (const auto& pair : fromPtr->links)
     {
-      out << pair.first << '\n';
-      flag = true;
+      if (pair.second.lock())
+      {
+        out << pair.first << '\n';
+        flag = true;
+      }
+    }
+    if (!flag)
+    {
+      out << '\n';
     }
   }
-  if (!flag)
+  catch (const std::out_of_range&)
   {
     out << '\n';
+    throw;
   }
 }
 
@@ -156,16 +173,24 @@ void shirokov::expired(std::istream& in, std::ostream& out, map_t& notes)
 {
   std::string noteFrom;
   in >> noteFrom;
-  std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
-  size_t k = 0;
-  for (const auto& pair : fromPtr->links)
+  try
   {
-    if (!pair.second.lock())
+    std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
+    size_t k = 0;
+    for (const auto& pair : fromPtr->links)
     {
-      ++k;
+      if (!pair.second.lock())
+      {
+        ++k;
+      }
     }
+    out << k << '\n';
   }
-  out << k << '\n';
+  catch (const std::out_of_range&)
+  {
+    out << '\n';
+    throw;
+  }
 }
 
 void shirokov::refresh(std::istream& in, std::ostream&, map_t& notes)
