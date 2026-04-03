@@ -1,9 +1,11 @@
+#include <iomanip>
 #include <ios>
 #include <iostream>
 #include <istream>
 #include <limits>
 #include <memory>
 #include <ostream>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -19,26 +21,27 @@ namespace shirokov
 {
   struct Note
   {
+    Note() = default;
     std::vector< std::string > entries;
     std::vector< std::weak_ptr< Note > > links;
   };
 
-  void note(std::istream& in, std::ostream&, map_t notes);
-  void line(std::istream& in, std::ostream&, map_t notes);
-  void show(std::istream& in, std::ostream& out, map_t notes);
-  void drop(std::istream& in, std::ostream&, map_t notes);
-  void link(std::istream& in, std::ostream&, map_t notes);
-  void halt(std::istream& in, std::ostream&, map_t notes);
-  void mind(std::istream& in, std::ostream& out, map_t notes);
-  void expired(std::istream& in, std::ostream& out, map_t notes);
-  void refresh(std::istream& in, std::ostream&, map_t notes);
+  void note(std::istream& in, std::ostream&, map_t& notes);
+  void line(std::istream& in, std::ostream&, map_t& notes);
+  void show(std::istream& in, std::ostream& out, map_t& notes);
+  void drop(std::istream& in, std::ostream&, map_t& notes);
+  void link(std::istream& in, std::ostream&, map_t& notes);
+  void halt(std::istream& in, std::ostream&, map_t& notes);
+  void mind(std::istream& in, std::ostream& out, map_t& notes);
+  void expired(std::istream& in, std::ostream& out, map_t& notes);
+  void refresh(std::istream& in, std::ostream&, map_t& notes);
 }
 
 int main()
 {
   map_t notes;
 
-  using cmd_t = void (*)(std::istream&, std::ostream&, map_t);
+  using cmd_t = void (*)(std::istream&, std::ostream&, map_t&);
   std::unordered_map< std::string, cmd_t > cmds;
   cmds["note"] = shirokov::note;
   cmds["line"] = shirokov::line;
@@ -71,63 +74,69 @@ int main()
   }
 }
 
-void shirokov::note(std::istream&, std::ostream&, map_t)
+void shirokov::note(std::istream& in, std::ostream&, map_t& notes)
+{
+  std::string noteName;
+  in >> noteName;
+  if (!noteName.empty() && notes.find(noteName) == notes.end())
+  {
+    notes[noteName] = std::make_shared< Note >();
+  }
+}
+
+void shirokov::line(std::istream& in, std::ostream&, map_t& notes)
+{
+  std::string noteName, quotedText;
+  in >> noteName >> std::quoted(quotedText);
+  notes.at(noteName)->entries.push_back(quotedText);
+}
+
+void shirokov::show(std::istream& in, std::ostream& out, map_t& notes)
+{
+  std::string noteName;
+  in >> noteName;
+  for (std::string line : notes.at(noteName)->entries)
+  {
+    out << line << '\n';
+  }
+}
+
+void shirokov::drop(std::istream& in, std::ostream&, map_t& notes)
+{
+  std::string noteName;
+  in >> noteName;
+  notes.erase(noteName);
+}
+
+void shirokov::link(std::istream&, std::ostream&, map_t&)
 {
   std::cout << "<THERE IS NO IMPLEMENTATION>\n";
   auto toIgnore = std::numeric_limits< std::streamsize >::max();
   std::cin.ignore(toIgnore, '\n');
 }
 
-void shirokov::line(std::istream&, std::ostream&, map_t)
+void shirokov::halt(std::istream&, std::ostream&, map_t&)
 {
   std::cout << "<THERE IS NO IMPLEMENTATION>\n";
   auto toIgnore = std::numeric_limits< std::streamsize >::max();
   std::cin.ignore(toIgnore, '\n');
 }
 
-void shirokov::show(std::istream&, std::ostream&, map_t)
+void shirokov::mind(std::istream&, std::ostream&, map_t&)
 {
   std::cout << "<THERE IS NO IMPLEMENTATION>\n";
   auto toIgnore = std::numeric_limits< std::streamsize >::max();
   std::cin.ignore(toIgnore, '\n');
 }
 
-void shirokov::drop(std::istream&, std::ostream&, map_t)
+void shirokov::expired(std::istream&, std::ostream&, map_t&)
 {
   std::cout << "<THERE IS NO IMPLEMENTATION>\n";
   auto toIgnore = std::numeric_limits< std::streamsize >::max();
   std::cin.ignore(toIgnore, '\n');
 }
 
-void shirokov::link(std::istream&, std::ostream&, map_t)
-{
-  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
-  auto toIgnore = std::numeric_limits< std::streamsize >::max();
-  std::cin.ignore(toIgnore, '\n');
-}
-
-void shirokov::halt(std::istream&, std::ostream&, map_t)
-{
-  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
-  auto toIgnore = std::numeric_limits< std::streamsize >::max();
-  std::cin.ignore(toIgnore, '\n');
-}
-
-void shirokov::mind(std::istream&, std::ostream&, map_t)
-{
-  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
-  auto toIgnore = std::numeric_limits< std::streamsize >::max();
-  std::cin.ignore(toIgnore, '\n');
-}
-
-void shirokov::expired(std::istream&, std::ostream&, map_t)
-{
-  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
-  auto toIgnore = std::numeric_limits< std::streamsize >::max();
-  std::cin.ignore(toIgnore, '\n');
-}
-
-void shirokov::refresh(std::istream&, std::ostream&, map_t)
+void shirokov::refresh(std::istream&, std::ostream&, map_t&)
 {
   std::cout << "<THERE IS NO IMPLEMENTATION>\n";
   auto toIgnore = std::numeric_limits< std::streamsize >::max();
