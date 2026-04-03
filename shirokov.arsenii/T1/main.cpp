@@ -137,14 +137,16 @@ void shirokov::mind(std::istream& in, std::ostream& out, map_t& notes)
   std::string noteFrom;
   in >> noteFrom;
   std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
+  bool flag = false;
   for (const auto& pair : fromPtr->links)
   {
     if (pair.second.lock())
     {
       out << pair.first << '\n';
+      flag = true;
     }
   }
-  if (fromPtr->links.empty())
+  if (!flag)
   {
     out << '\n';
   }
