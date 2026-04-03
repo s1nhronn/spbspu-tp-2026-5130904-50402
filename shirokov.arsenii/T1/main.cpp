@@ -5,7 +5,6 @@
 #include <limits>
 #include <memory>
 #include <ostream>
-#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -23,7 +22,7 @@ namespace shirokov
   {
     Note() = default;
     std::vector< std::string > entries;
-    std::vector< std::weak_ptr< Note > > links;
+    std::unordered_map< std::string, std::weak_ptr< Note > > links;
   };
 
   void note(std::istream& in, std::ostream&, map_t& notes);
@@ -108,37 +107,66 @@ void shirokov::drop(std::istream& in, std::ostream&, map_t& notes)
   notes.erase(noteName);
 }
 
-void shirokov::link(std::istream&, std::ostream&, map_t&)
+void shirokov::link(std::istream& in, std::ostream&, map_t& notes)
 {
-  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
-  auto toIgnore = std::numeric_limits< std::streamsize >::max();
-  std::cin.ignore(toIgnore, '\n');
+  std::string noteTo, noteFrom;
+  in >> noteTo >> noteFrom;
+  std::shared_ptr< Note > toPtr = notes.at(noteTo);
+  std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
+  if (!noteTo.empty() && !noteFrom.empty() && fromPtr->links.find(noteTo) == fromPtr->links.end())
+  {
+    fromPtr->links[noteTo] = toPtr;
+  }
 }
 
-void shirokov::halt(std::istream&, std::ostream&, map_t&)
+void shirokov::halt(std::istream& in, std::ostream&, map_t& notes)
 {
-  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
-  auto toIgnore = std::numeric_limits< std::streamsize >::max();
-  std::cin.ignore(toIgnore, '\n');
+  std::string noteTo, noteFrom;
+  in >> noteTo >> noteFrom;
+  std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
+  fromPtr->links.erase(noteTo);
 }
 
-void shirokov::mind(std::istream&, std::ostream&, map_t&)
+void shirokov::mind(std::istream& in, std::ostream& out, map_t& notes)
 {
-  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
-  auto toIgnore = std::numeric_limits< std::streamsize >::max();
-  std::cin.ignore(toIgnore, '\n');
+  std::string noteFrom;
+  in >> noteFrom;
+  std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
+  for (const auto& pair : fromPtr->links)
+  {
+    if (pair.second.lock())
+    {
+      out << pair.first << '\n';
+    }
+  }
 }
 
-void shirokov::expired(std::istream&, std::ostream&, map_t&)
+void shirokov::expired(std::istream& in, std::ostream& out, map_t& notes)
 {
-  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
-  auto toIgnore = std::numeric_limits< std::streamsize >::max();
-  std::cin.ignore(toIgnore, '\n');
+  std::string noteFrom;
+  in >> noteFrom;
+  std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
+  size_t k = 0;
+  for (const auto& pair : fromPtr->links)
+  {
+    if (pair.second.lock())
+    {
+      ++k;
+    }
+  }
+  out << k << '\n';
 }
 
-void shirokov::refresh(std::istream&, std::ostream&, map_t&)
+void shirokov::refresh(std::istream& in, std::ostream&, map_t& notes)
 {
-  std::cout << "<THERE IS NO IMPLEMENTATION>\n";
-  auto toIgnore = std::numeric_limits< std::streamsize >::max();
-  std::cin.ignore(toIgnore, '\n');
+  std::string noteFrom;
+  in >> noteFrom;
+  std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
+  for (const auto& pair : fromPtr->links)
+  {
+    if (!pair.second.lock())
+    {
+      fromPtr->links.erase(pair.first);
+    }
+  }
 }
