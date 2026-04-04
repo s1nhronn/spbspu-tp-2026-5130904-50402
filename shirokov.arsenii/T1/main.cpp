@@ -16,6 +16,7 @@ namespace shirokov
 }
 
 using map_t = std::unordered_map< std::string, std::shared_ptr< shirokov::Note > >;
+using links_t = std::vector< std::pair< std::string, std::weak_ptr< shirokov::Note > > >;
 
 namespace shirokov
 {
@@ -23,8 +24,7 @@ namespace shirokov
   {
     Note() = default;
     std::vector< std::string > entries;
-    std::unordered_map< std::string, std::weak_ptr< Note > >
-        links; // FIXME: хэш-таблице безразлично на порядок добавления элементов, надо переделать на вектор пар
+    links_t links;
   };
 
   void note(std::istream& in, std::ostream&, map_t& notes);
@@ -36,6 +36,8 @@ namespace shirokov
   void mind(std::istream& in, std::ostream& out, map_t& notes);
   void expired(std::istream& in, std::ostream& out, map_t& notes);
   void refresh(std::istream& in, std::ostream&, map_t& notes);
+
+  bool exist(const links_t& v, const std::string& s);
 }
 
 int main()
@@ -124,9 +126,9 @@ void shirokov::link(std::istream& in, std::ostream&, map_t& notes)
   in >> noteFrom >> noteTo;
   std::shared_ptr< Note > toPtr = notes.at(noteTo);
   std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
-  if (fromPtr->links.find(noteTo) == fromPtr->links.end())
+  if (!exist(fromPtr->links, noteTo))
   {
-    fromPtr->links[noteTo] = toPtr;
+    fromPtr->links.push_back({noteTo, toPtr});
   }
   else
   {
@@ -140,7 +142,14 @@ void shirokov::halt(std::istream& in, std::ostream&, map_t& notes)
   in >> noteFrom >> noteTo;
   std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
   notes.at(noteTo);
-  fromPtr->links.erase(noteTo);
+  for (auto it = fromPtr->links.begin(); it != fromPtr->links.end(); ++it)
+  {
+    if ((*it).first == noteTo)
+    {
+      fromPtr->links.erase(it);
+      break;
+    }
+  }
 }
 
 void shirokov::mind(std::istream& in, std::ostream& out, map_t& notes)
@@ -184,16 +193,25 @@ void shirokov::refresh(std::istream& in, std::ostream&, map_t& notes)
   std::string noteFrom;
   in >> noteFrom;
   std::shared_ptr< Note > fromPtr = notes.at(noteFrom);
-  std::vector< std::string > toRemove;
-  for (const auto& pair : fromPtr->links)
+  links_t newLinksVec;
+  for (auto pair : fromPtr->links)
   {
     if (!pair.second.lock())
     {
-      toRemove.push_back(pair.first);
+      newLinksVec.push_back(pair);
     }
   }
-  for (const auto& key : toRemove)
+  fromPtr->links = newLinksVec;
+}
+
+bool shirokov::exist(const links_t& v, const std::string& s)
+{
+  for (size_t i = 0; i < v.size(); ++i)
   {
-    fromPtr->links.erase(key);
+    if (v[i].first == s)
+    {
+      return true;
+    }
   }
+  return false;
 }
