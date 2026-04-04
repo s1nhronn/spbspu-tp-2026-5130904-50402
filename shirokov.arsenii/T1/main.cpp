@@ -196,7 +196,7 @@ void shirokov::refresh(std::istream& in, std::ostream&, map_t& notes)
   links_t newLinksVec;
   for (auto pair : fromPtr->links)
   {
-    if (!pair.second.lock())
+    if (pair.second.lock())
     {
       newLinksVec.push_back(pair);
     }
