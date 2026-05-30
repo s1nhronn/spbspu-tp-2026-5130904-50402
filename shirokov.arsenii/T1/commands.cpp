@@ -33,9 +33,9 @@ void shirokov::show(std::istream& in, std::ostream& out, map_t& notes)
   {
     out << entries[0];
   }
-  for (std::string line : entries)
+  for (size_t i = 1; i < entries.size(); ++i)
   {
-    out << '\n' << line;
+    out << '\n' << entries[i];
   }
 }
 
@@ -96,9 +96,9 @@ void shirokov::mind(std::istream& in, std::ostream& out, map_t& notes)
   {
     out << ids[0];
   }
-  for (const std::string& id : ids)
+  for (size_t i = 1; i < ids.size(); ++i)
   {
-    out << '\n' << id;
+    out << '\n' << ids[i];
   }
 }
 
