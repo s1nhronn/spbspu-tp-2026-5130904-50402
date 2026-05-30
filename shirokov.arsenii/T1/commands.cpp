@@ -8,11 +8,11 @@ void shirokov::note(std::istream& in, std::ostream&, map_t& notes)
   in >> noteName;
   if (notes.find(noteName) == notes.end())
   {
-    notes[noteName] = std::make_shared< Note >();
+    notes.insert({noteName, std::make_shared< Note >()});
   }
   else
   {
-    throw std::logic_error("");
+    throw std::logic_error("A note with this name already exists.");
   }
 }
 
@@ -27,7 +27,8 @@ void shirokov::show(std::istream& in, std::ostream& out, map_t& notes)
 {
   std::string noteName;
   in >> noteName;
-  for (std::string line : notes.at(noteName)->entries)
+  std::vector< std::string > entries = notes.at(noteName)->entries;
+  for (std::string line : entries)
   {
     out << line << '\n';
   }
@@ -57,7 +58,7 @@ void shirokov::link(std::istream& in, std::ostream&, map_t& notes)
   }
   else
   {
-    throw std::logic_error("");
+    throw std::logic_error("The link to this note already exists");
   }
 }
 
@@ -69,7 +70,7 @@ void shirokov::halt(std::istream& in, std::ostream&, map_t& notes)
   notes.at(noteTo);
   for (auto it = fromPtr->links.begin(); it != fromPtr->links.end(); ++it)
   {
-    if ((*it).first == noteTo)
+    if (it->first == noteTo)
     {
       fromPtr->links.erase(it);
       break;
